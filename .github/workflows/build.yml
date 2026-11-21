@@ -1,0 +1,44 @@
+name: executaveis
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compilar executavel Windows
+        run: |
+          pip install pyinstaller
+          pyinstaller balcaofacil.spec --noconfirm --clean
+      - name: Gerar instalador Setup.exe
+        run: iscc installer.iss
+      - uses: actions/upload-artifact@v4
+        with:
+          name: balcaofacil-windows-exe
+          path: dist/balcaofacil.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: balcaofacil-windows-instalador
+          path: output/BalcaoFacil-Setup.exe
+
+  build-linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compilar executavel Linux
+        run: |
+          pip install pyinstaller
+          pyinstaller balcaofacil.spec --noconfirm --clean
+      - uses: actions/upload-artifact@v4
+        with:
+          name: balcaofacil-linux
+          path: dist/balcaofacil
